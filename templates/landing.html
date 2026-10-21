@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}Campus Eco-Tracker · Make campus greener{% endblock %}
+{% block content %}
+<section class="hero-section">
+  <div class="container app-container hero-grid">
+    <div class="hero-copy">
+      <div class="eyebrow"><span class="eyebrow-dot"></span> A GREENER CAMPUS STARTS HERE</div>
+      <h1>Make every campus<br><span>action count.</span></h1>
+      <p class="hero-intro">One shared place to understand campus resource use, track carbon estimates, and celebrate the everyday choices that make a difference.</p>
+      <div class="d-flex flex-wrap gap-3 mt-4">
+        <a href="{{ url_for('register') }}" class="btn btn-lime btn-lg">Create your account <span aria-hidden="true">↗</span></a>
+        <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-lg">Explore dashboard</a>
+      </div>
+      <div class="hero-trust"><span class="avatar-stack"><i>G</i><i>R</i><i>E</i></span><span>Built for students, faculty & campus teams</span></div>
+    </div>
+    <div class="hero-art" aria-label="Illustration of a sustainable campus dashboard">
+      <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+      <div class="floating-leaf leaf-one">✳</div><div class="floating-leaf leaf-two">✦</div>
+      <div class="eco-panel">
+        <div class="eco-panel-top"><div><span class="tiny-label">CAMPUS FOOTPRINT</span><h3>Monthly snapshot</h3></div><span class="live-pill"><i></i> TRACKING</span></div>
+        <div class="eco-number"><strong>{{ '%.1f'|format(totals['emissions'] or 0) }}</strong><span>kg CO₂e</span></div>
+        <div class="mini-bars" aria-hidden="true"><i style="height:32%"></i><i style="height:48%"></i><i style="height:42%"></i><i style="height:65%"></i><i style="height:50%"></i><i style="height:75%"></i><i style="height:58%"></i><i style="height:88%"></i><i style="height:70%"></i><i style="height:62%"></i><i style="height:45%"></i><i style="height:55%"></i></div>
+        <div class="panel-divider"></div>
+        <div class="eco-panel-bottom"><div><span class="tiny-label">UTILITY ENTRIES</span><strong>{{ totals['logs'] }}</strong></div><div><span class="tiny-label">CAMPUS BUILDINGS</span><strong>{{ building_count }}</strong></div><div><span class="tiny-label">GREEN ACTIONS</span><strong>{{ action_count }}</strong></div></div>
+      </div>
+      <div class="floating-chip chip-leaf"><span>✳</span><div><b>Small steps</b><small>Real change</small></div></div>
+      <div class="floating-chip chip-score"><span class="score-icon">↗</span><div><b>Track your impact</b><small>One entry at a time</small></div></div>
+    </div>
+  </div>
+</section>
+<section class="feature-section">
+  <div class="container app-container">
+    <div class="section-heading"><div class="eyebrow eyebrow-dark">THE ECO-TRACKER TOOLKIT</div><h2>From campus data to<br><span>better decisions.</span></h2><p>A simple, practical view of how our campus uses resources and how our community can do better.</p></div>
+    <div class="row g-3 g-lg-4 mt-3">
+      <div class="col-md-4"><article class="feature-card"><span class="feature-icon icon-mint">⌁</span><div class="feature-kicker">01 / MEASURE</div><h3>Know your footprint</h3><p>Log electricity, water, waste and commute entries with automatic estimated CO₂-equivalent calculations.</p><a href="{{ url_for('register') }}">Start tracking <span>↗</span></a></article></div>
+      <div class="col-md-4"><article class="feature-card"><span class="feature-icon icon-yellow">▥</span><div class="feature-kicker">02 / UNDERSTAND</div><h3>See the bigger picture</h3><p>Explore utility trends, compare buildings, check recorded costs and export data for review.</p><a href="{{ url_for('register') }}">Explore analytics <span>↗</span></a></article></div>
+      <div class="col-md-4"><article class="feature-card"><span class="feature-icon icon-lavender">✳</span><div class="feature-kicker">03 / TAKE ACTION</div><h3>Make green habits visible</h3><p>Record practical eco-actions, collect points and encourage a little friendly campus competition.</p><a href="{{ url_for('register') }}">Join the community <span>↗</span></a></article></div>
+    </div>
+  </div>
+</section>
+<section class="leader-preview-section"><div class="container app-container leader-preview"><div><div class="eyebrow eyebrow-dark">CAMPUS COMMUNITY</div><h2>Good habits deserve<br>to be <span>celebrated.</span></h2><p>Every walk, reusable bottle and campus clean-up adds to a culture of sustainability.</p><a class="text-link" href="{{ url_for('register') }}">Be part of the leaderboard ↗</a></div><div class="preview-leader-card"><div class="preview-card-head"><div><small>COMMUNITY SPOTLIGHT</small><h3>Green points leaders</h3></div><span>✳</span></div>{% if leaders %}{% for leader in leaders %}<div class="preview-leader-row"><span class="rank-number">{{ '%02d'|format(loop.index) }}</span><span class="leader-avatar">{{ leader['full_name'][0]|upper }}</span><div class="leader-preview-name"><strong>{{ leader['full_name'] }}</strong><small>{{ leader['department'] }}</small></div><b>{{ leader['points'] }} <small>pts</small></b></div>{% endfor %}{% else %}<p class="text-secondary mb-0">The first green points leaders will appear here after eco-actions are recorded.</p>{% endif %}</div></div></section>
+{% endblock %}

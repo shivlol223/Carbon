@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard · Campus Eco-Tracker{% endblock %}
+{% block content %}
+<div class="container app-container page-container">
+  <div class="page-heading page-heading-row"><div><div class="eyebrow eyebrow-dark">CAMPUS OVERVIEW / {{ today }}</div><h1>Good day, {{ current_user['full_name'].split(' ')[0] }} <span class="wave">✳</span></h1><p>Here's the latest sustainability snapshot from your campus.</p></div><div class="heading-actions">{% if current_user['role'] in ['admin','faculty'] %}<a class="btn btn-forest" href="{{ url_for('new_utility') }}"><span>＋</span> Log utility data</a>{% endif %}<a class="btn btn-soft" href="{{ url_for('pledges') }}">＋ Add eco-action</a></div></div>
+  <div class="metric-grid">
+    <article class="metric-card metric-emissions"><div class="metric-top"><span>ESTIMATED CAMPUS FOOTPRINT</span><span class="metric-icon">◉</span></div><div class="metric-value">{{ '%.1f'|format(summary['total_emissions'] or 0) }} <small>kg CO₂e</small></div><div class="metric-foot"><span class="metric-pill">All recorded entries</span><span class="metric-arrow">↗</span></div><div class="metric-deco" aria-hidden="true"></div></article>
+    <article class="metric-card"><div class="metric-top"><span>UTILITY ENTRIES</span><span class="metric-icon icon-square">▤</span></div><div class="metric-value">{{ summary['log_count'] }}</div><div class="metric-foot"><span class="metric-sub">Across campus resources</span><a href="{{ url_for('utilities') }}" aria-label="View utility entries">↗</a></div></article>
+    <article class="metric-card"><div class="metric-top"><span>RECORDED UTILITY COST</span><span class="metric-icon icon-square">₹</span></div><div class="metric-value">₹{{ '{:,.0f}'.format(summary['total_cost'] or 0) }}</div><div class="metric-foot"><span class="metric-sub">Sum of entered costs</span><a href="{{ url_for('analytics') }}" aria-label="View analytics">↗</a></div></article>
+    <article class="metric-card"><div class="metric-top"><span>YOUR GREEN POINTS</span><span class="metric-icon icon-square">✳</span></div><div class="metric-value">{{ user_points }} <small>pts</small></div><div class="metric-foot"><span class="metric-sub">{{ actions_total }} campus actions logged</span><a href="{{ url_for('leaderboard') }}" aria-label="View leaderboard">↗</a></div></article>
+  </div>
+  <div class="dashboard-grid charts-row">
+    <section class="content-card chart-card"><div class="card-heading"><div><span class="card-overline">TRACK THE TREND</span><h2>Carbon footprint over time</h2><p>Estimated emissions grouped by month</p></div><span class="round-icon">⌁</span></div><div class="chart-canvas chart-canvas-tall"><canvas id="trendChart" aria-label="Monthly estimated carbon emissions chart" role="img"></canvas></div></section>
+    <section class="content-card chart-card"><div class="card-heading"><div><span class="card-overline">WHERE IT COMES FROM</span><h2>Emission by utility</h2><p>Share of recorded CO₂e estimates</p></div><span class="round-icon">◔</span></div><div class="chart-canvas chart-canvas-donut"><canvas id="typeChart" aria-label="Carbon emissions by utility type" role="img"></canvas></div><div class="chart-note"><span class="chart-dot"></span> Values are estimates using the factors documented for this educational project.</div></section>
+  </div>
+  <div class="dashboard-grid lower-row">
+    <section class="content-card"><div class="card-heading"><div><span class="card-overline">LATEST ACTIVITY</span><h2>Recent utility entries</h2><p>Most recently recorded campus resource data</p></div><a class="text-link" href="{{ url_for('utilities') }}">View all ↗</a></div>
+      {% if recent_logs %}<div class="table-responsive"><table class="table app-table align-middle"><thead><tr><th>Resource</th><th>Building</th><th>Date</th><th>Consumption</th><th>kg CO₂e</th></tr></thead><tbody>{% for log in recent_logs %}<tr><td><span class="utility-dot utility-{{ log['utility_type']|lower }}"></span><strong>{{ log['utility_type'] }}</strong></td><td>{{ log['building_name'] or 'Commute' }}</td><td class="text-muted">{{ log['recorded_date'] }}</td><td>{{ '{:,.2f}'.format(log['consumption_value']) }} <span class="text-muted">{{ log['unit'] }}</span></td><td><strong>{{ '{:,.2f}'.format(log['carbon_emission']) }}</strong></td></tr>{% endfor %}</tbody></table></div>{% else %}<div class="empty-state"><span>▤</span><h3>No utility data yet</h3><p>When a faculty member or admin adds entries, they will appear here.</p></div>{% endif %}
+    </section>
+    <section class="content-card leaderboard-card"><div class="card-heading"><div><span class="card-overline">GREEN COMMUNITY</span><h2>Leaderboard</h2><p>People turning good intentions into action</p></div><span class="round-icon">✳</span></div>{% if top_users %}<div class="leader-list">{% for user in top_users %}<div class="leader-row"><span class="rank-number {% if loop.index == 1 %}rank-first{% endif %}">{{ '%02d'|format(loop.index) }}</span><span class="leader-avatar avatar-{{ loop.index }}">{{ user['full_name'][0]|upper }}</span><div class="leader-name"><strong>{{ user['full_name'] }}</strong><small>{{ user['department'] }}</small></div><div class="leader-points"><strong>{{ user['points'] }}</strong><small>PTS</small></div></div>{% endfor %}</div><a class="btn btn-soft w-100 mt-3" href="{{ url_for('leaderboard') }}">Full leaderboard <span>↗</span></a>{% else %}<div class="empty-state"><p>Be the first to record a green action.</p><a class="text-link" href="{{ url_for('pledges') }}">Log an eco-action ↗</a></div>{% endif %}</section>
+  </div>
+  <div class="disclaimer-line"><span>ⓘ</span><p><strong>About these estimates:</strong> carbon values use simplified factors for project demonstration. They are not official, verified institutional emissions figures.</p><a href="{{ url_for('analytics') }}">View analytics details ↗</a></div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+window.ecoTrackerCharts = {
+  trendLabels: {{ trend_labels|tojson }}, trendValues: {{ trend_values|tojson }},
+  typeLabels: {{ type_labels|tojson }}, typeValues: {{ type_values|tojson }}
+};
+</script>
+{% endblock %}

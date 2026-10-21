@@ -1,0 +1,3 @@
+{% extends 'base.html' %}
+{% block title %}{{ code }} · Campus Eco-Tracker{% endblock %}
+{% block content %}<div class="container app-container page-container narrow-container"><section class="content-card error-card"><div class="error-code">{{ code }}</div><h1>Well, that's a detour.</h1><p>{{ message }}</p><a class="btn btn-forest" href="{{ url_for('dashboard') if current_user else url_for('index') }}">Back to safety ↗</a></section></div>{% endblock %}
